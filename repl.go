@@ -33,10 +33,13 @@ func startRepl(cfg *config) {
 			continue
 		}
 
+		sanitisedArgLoc := sanitised
+		// fmt.Printf("santised: %v\n", sanitised)
+
 		cmdName := sanitised[0]
 		cmd, ok := getCommands()[cmdName]
 		if ok {
-			err := cmd.Callback(cfg)
+			err := cmd.Callback(sanitisedArgLoc, cfg)
 			if err != nil {
 				fmt.Println("Error:", err)
 			}
@@ -57,7 +60,7 @@ func sanitiseInput(inputText string) []string {
 type cliCommand struct {
 	Name        string
 	Description string
-	Callback    func(*config) error
+	Callback    func([]string, *config) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -82,10 +85,20 @@ func getCommands() map[string]cliCommand {
 			Description: "Display the previous 20 locations",
 			Callback:    commandMapBack,
 		},
-		"cache": {
-			Name:        "cache",
-			Description: "Print cache debug information",
-			Callback:    cacheDebug,
+		"explore": {
+			Name:        "explore",
+			Description: "Find pokemon within the area",
+			Callback:    exploreLocation,
 		},
+        "catch": {
+            Name: "catch",
+            Description: "Catch a pokemon and add it to your Pokedex",
+            Callback: catch,
+        },
+		// "cache": {
+		// 	Name:        "cache",
+		// 	Description: "Print cache debug information",
+		// 	Callback:    cacheDebug,
+		// },
 	}
 }
